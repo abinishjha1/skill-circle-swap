@@ -1,4 +1,3 @@
-
 import { User, Skill, Match, Message, ChatThread, SkillCategory, SkillLevel, MatchStatus } from '../types';
 
 export const mockSkills: Skill[] = [
@@ -166,7 +165,7 @@ export const mockMessages: Message[] = [
     id: '2',
     senderId: '2',
     receiverId: '1',
-    content: 'Hey Alex! Yes, that sounds great. I've been wanting to learn React for a while now.',
+    content: "Hey Alex! Yes, that sounds great. I've been wanting to learn React for a while now.",
     sentAt: '2023-04-11T10:15:00Z',
     read: true
   },

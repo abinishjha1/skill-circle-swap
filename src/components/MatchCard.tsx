@@ -1,11 +1,11 @@
 
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Exchange, ArrowRight, MessageSquare } from "lucide-react";
-import { Match, User, Skill } from "@/types";
-import { getMatchedUser, getMatchedSkill, getMatchStatusColor } from "@/utils/mockData";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RepeatIcon } from "lucide-react";
+import { getMatchedUser, getMatchedSkill, getSkillCategoryColor, getMatchStatusColor } from "@/utils/mockData";
+import { Match } from "@/types";
 
 interface MatchCardProps {
   match: Match;
@@ -16,66 +16,63 @@ const MatchCard = ({ match, currentUserId }: MatchCardProps) => {
   const matchedUser = getMatchedUser(match, currentUserId);
   const skillOffered = getMatchedSkill(match, true);
   const skillWanted = getMatchedSkill(match, false);
-  const statusColor = getMatchStatusColor(match.status);
   
-  if (!matchedUser || !skillOffered || !skillWanted) {
-    return null;
-  }
-
+  if (!matchedUser || !skillOffered || !skillWanted) return null;
+  
+  const userInitials = matchedUser.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase();
+  
   return (
-    <Card className="card-hover overflow-hidden">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-            <img 
-              src={matchedUser.avatar} 
-              alt={matchedUser.name}
-              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
-            />
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Avatar>
+              <AvatarImage src={matchedUser.avatar} alt={matchedUser.name} />
+              <AvatarFallback>{userInitials}</AvatarFallback>
+            </Avatar>
             <div>
-              <h3 className="font-semibold text-base">{matchedUser.name}</h3>
+              <h3 className="font-semibold">{matchedUser.name}</h3>
               <p className="text-sm text-gray-500">{matchedUser.location}</p>
             </div>
           </div>
-          <Badge className={statusColor}>
+          <Badge className={getMatchStatusColor(match.status)}>
             {match.status}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between mt-2 text-sm">
-          <div className="skill-badge truncate max-w-[120px]">
-            {skillOffered.name}
+      <CardContent className="pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <p className="text-xs text-gray-500 mb-1">You Offer</p>
+            <Badge variant="outline" className={getSkillCategoryColor(skillOffered.category)}>
+              {skillOffered.name}
+            </Badge>
           </div>
-          <div className="flex items-center px-2">
-            <ArrowRight size={16} className="text-gray-400" />
+          <div className="mx-2">
+            <RepeatIcon className="h-5 w-5 text-gray-400" />
           </div>
-          <div className="skill-badge-wanted truncate max-w-[120px]">
-            {skillWanted.name}
+          <div>
+            <p className="text-xs text-gray-500 mb-1">You Receive</p>
+            <Badge variant="outline" className={getSkillCategoryColor(skillWanted.category)}>
+              {skillWanted.name}
+            </Badge>
           </div>
         </div>
-        <p className="text-gray-600 mt-3 text-sm">
+        <p className="text-xs text-gray-500">
           Matched on {new Date(match.matchedAt).toLocaleDateString()}
         </p>
       </CardContent>
-      <CardFooter className="pt-2 flex justify-between">
-        {match.status === 'Pending' ? (
-          <>
-            <Button variant="outline" size="sm" className="flex-1 mr-2">
-              Decline
-            </Button>
-            <Button className="flex-1 bg-skillswap-purple hover:bg-skillswap-purple-dark">
-              Accept
-            </Button>
-          </>
-        ) : (
-          <Link to={`/chat?thread=${matchedUser.id}`} className="w-full">
-            <Button variant="outline" size="sm" className="w-full">
-              <MessageSquare size={16} className="mr-2" />
-              Message
-            </Button>
-          </Link>
-        )}
+      <CardFooter className="bg-gray-50 border-t">
+        <Link 
+          to={`/chat?thread=${match.id}`}
+          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+        >
+          Message {matchedUser.name}
+        </Link>
       </CardFooter>
     </Card>
   );
