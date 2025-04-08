@@ -79,14 +79,79 @@
 
 @layer components {
   .skill-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-skillswap-purple/10 text-skillswap-purple;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-skillswap-purple/10 text-skillswap-purple transition-all hover:bg-skillswap-purple/20;
   }
   
   .skill-badge-wanted {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-skillswap-orange/10 text-skillswap-orange;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-skillswap-orange/10 text-skillswap-orange transition-all hover:bg-skillswap-orange/20;
   }
   
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-transparent;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/80 dark:bg-black/20;
+  }
+
+  .hero-gradient {
+    @apply bg-gradient-to-br from-skillswap-purple to-skillswap-purple-dark;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-skillswap-purple via-skillswap-purple-light to-skillswap-purple;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold relative before:content-[''] before:absolute before:h-1 before:w-10 before:-bottom-2 before:left-0 before:bg-skillswap-orange mb-8;
+  }
+
+  .button-glow {
+    @apply relative after:absolute after:inset-0 after:rounded-md after:opacity-0 after:transition-opacity hover:after:opacity-100 after:bg-white/20 after:blur-md;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
