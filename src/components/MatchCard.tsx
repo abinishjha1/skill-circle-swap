@@ -4,24 +4,37 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RepeatIcon } from "lucide-react";
-import { getMatchedUser, getMatchedSkill, getSkillCategoryColor, getMatchStatusColor } from "@/utils/mockData";
-import { Match } from "@/types";
+import { getSkillCategoryColor, getMatchStatusColor } from "@/utils/mockData";
+import { Match, MatchStatus } from "@/types";
 
 interface MatchCardProps {
-  match: Match;
+  match: {
+    id: string;
+    userId: string;
+    matchedUserId: string;
+    skillOfferedId: string;
+    skillWantedId: string;
+    matchedAt: string;
+    status: MatchStatus;
+    profiles: any;
+    matchedProfiles: any;
+    offeredSkill: any;
+    wantedSkill: any;
+  };
   currentUserId: string;
 }
 
 const MatchCard = ({ match, currentUserId }: MatchCardProps) => {
-  const matchedUser = getMatchedUser(match, currentUserId);
-  const skillOffered = getMatchedSkill(match, true);
-  const skillWanted = getMatchedSkill(match, false);
+  const isCurrentUserInitiator = match.userId === currentUserId;
+  const matchedUser = isCurrentUserInitiator ? match.matchedProfiles : match.profiles;
+  const skillOffered = isCurrentUserInitiator ? match.offeredSkill : match.wantedSkill;
+  const skillWanted = isCurrentUserInitiator ? match.wantedSkill : match.offeredSkill;
   
   if (!matchedUser || !skillOffered || !skillWanted) return null;
   
   const userInitials = matchedUser.name
     .split(' ')
-    .map(n => n[0])
+    .map((n: string) => n[0])
     .join('')
     .toUpperCase();
   
