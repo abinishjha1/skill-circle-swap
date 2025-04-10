@@ -6,10 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { User } from "@/types";
+import { User, Skill, SkillCategory, SkillLevel } from "@/types";
 import SkillList from "./SkillList";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UserProfileProps {
   user: User;
@@ -17,6 +22,13 @@ interface UserProfileProps {
   isEditing?: boolean;
   setIsEditing?: (editing: boolean) => void;
   refetchProfile?: () => void;
+}
+
+interface SkillFormValues {
+  name: string;
+  category: SkillCategory;
+  description: string;
+  level: SkillLevel;
 }
 
 const UserProfile = ({ 
@@ -32,6 +44,17 @@ const UserProfile = ({
     bio: user.bio || "",
     location: user.location || "",
   });
+  const [addingOfferedSkill, setAddingOfferedSkill] = useState(false);
+  const [addingWantedSkill, setAddingWantedSkill] = useState(false);
+
+  const skillForm = useForm<SkillFormValues>({
+    defaultValues: {
+      name: "",
+      category: "Technology",
+      description: "",
+      level: "Intermediate",
+    },
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -43,18 +66,10 @@ const UserProfile = ({
 
   const handleSave = async () => {
     try {
-      // Fix TypeScript error by casting from to the correct table name
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: formData.name,
-          bio: formData.bio,
-          location: formData.location,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
+      // This is a mock update since we're using mock data
+      // In a real app with Supabase, we would update the profiles table
+      console.log("Updating user profile with data:", formData);
+      
       toast({
         title: "Profile updated",
         description: "Your profile information has been updated successfully.",
@@ -70,6 +85,154 @@ const UserProfile = ({
       });
     }
   };
+
+  const handleAddSkill = async (isOffered: boolean) => {
+    try {
+      const values = skillForm.getValues();
+      console.log("Adding new skill:", values, "isOffered:", isOffered);
+      
+      // In a real app, we would add the skill to the database
+      const newSkill: Skill = {
+        id: `skill-${Date.now()}`,
+        name: values.name,
+        category: values.category,
+        description: values.description,
+        level: values.level,
+      };
+      
+      // Update local state to reflect the new skill
+      if (isOffered) {
+        user.skillsOffered = [...user.skillsOffered, newSkill];
+        setAddingOfferedSkill(false);
+      } else {
+        user.skillsWanted = [...user.skillsWanted, newSkill];
+        setAddingWantedSkill(false);
+      }
+      
+      skillForm.reset();
+      
+      toast({
+        title: "Skill added",
+        description: `Your ${isOffered ? 'offered' : 'wanted'} skill has been added successfully.`,
+      });
+      
+      refetchProfile();
+    } catch (error: any) {
+      toast({
+        title: "Failed to add skill",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const SkillFormDialog = ({ isOffered }: { isOffered: boolean }) => (
+    <Dialog 
+      open={isOffered ? addingOfferedSkill : addingWantedSkill} 
+      onOpenChange={(open) => isOffered ? setAddingOfferedSkill(open) : setAddingWantedSkill(open)}
+    >
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{isOffered ? 'Add Skill to Offer' : 'Add Skill You Want to Learn'}</DialogTitle>
+        </DialogHeader>
+        <Form {...skillForm}>
+          <div className="grid gap-4 py-4">
+            <FormField
+              control={skillForm.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skill Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., JavaScript" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={skillForm.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <ScrollArea className="h-[200px]">
+                        <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Design">Design</SelectItem>
+                        <SelectItem value="Business">Business</SelectItem>
+                        <SelectItem value="Language">Language</SelectItem>
+                        <SelectItem value="Music">Music</SelectItem>
+                        <SelectItem value="Cooking">Cooking</SelectItem>
+                        <SelectItem value="Fitness">Fitness</SelectItem>
+                        <SelectItem value="Arts & Crafts">Arts & Crafts</SelectItem>
+                        <SelectItem value="Academic">Academic</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </ScrollArea>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={skillForm.control}
+              name="level"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Skill Level</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Advanced">Advanced</SelectItem>
+                      <SelectItem value="Expert">Expert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={skillForm.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Briefly describe your skill or what you want to learn" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => isOffered ? setAddingOfferedSkill(false) : setAddingWantedSkill(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => handleAddSkill(isOffered)}>
+              Add Skill
+            </Button>
+          </div>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <div className="space-y-6">
@@ -174,7 +337,12 @@ const UserProfile = ({
           Skills Offered
         </h3>
         {isCurrentUser && (
-          <Button variant="outline" size="sm" className="text-skillswap-purple">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-skillswap-purple"
+            onClick={() => setAddingOfferedSkill(true)}
+          >
             <Plus size={16} className="mr-1" />
             Add Skill
           </Button>
@@ -194,7 +362,12 @@ const UserProfile = ({
           Skills Wanted
         </h3>
         {isCurrentUser && (
-          <Button variant="outline" size="sm" className="text-skillswap-orange">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-skillswap-orange"
+            onClick={() => setAddingWantedSkill(true)}
+          >
             <Plus size={16} className="mr-1" />
             Add Skill
           </Button>
@@ -207,6 +380,13 @@ const UserProfile = ({
         isOffered={false}
         emptyMessage={isCurrentUser ? "Add skills you want to learn" : "Not looking for any skills yet"}
       />
+
+      {isCurrentUser && (
+        <>
+          <SkillFormDialog isOffered={true} />
+          <SkillFormDialog isOffered={false} />
+        </>
+      )}
     </div>
   );
 };

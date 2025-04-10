@@ -70,13 +70,7 @@ const Matches = () => {
               activeMatches.map(match => 
                 <MatchCard 
                   key={match.id} 
-                  match={{
-                    ...match,
-                    profiles: mockMatches[0].profiles,
-                    matchedProfiles: mockMatches[0].matchedProfiles,
-                    offeredSkill: mockMatches[0].offeredSkill,
-                    wantedSkill: mockMatches[0].wantedSkill
-                  }} 
+                  match={match as any}
                   currentUserId={authUser?.id || ''}
                 />
               )
@@ -90,13 +84,7 @@ const Matches = () => {
               pendingMatches.map(match => 
                 <MatchCard 
                   key={match.id} 
-                  match={{
-                    ...match,
-                    profiles: mockMatches[0].profiles,
-                    matchedProfiles: mockMatches[0].matchedProfiles,
-                    offeredSkill: mockMatches[0].offeredSkill,
-                    wantedSkill: mockMatches[0].wantedSkill
-                  }} 
+                  match={match as any}
                   currentUserId={authUser?.id || ''}
                 />
               )
@@ -110,13 +98,7 @@ const Matches = () => {
               completedMatches.map(match => 
                 <MatchCard 
                   key={match.id} 
-                  match={{
-                    ...match,
-                    profiles: mockMatches[0].profiles,
-                    matchedProfiles: mockMatches[0].matchedProfiles,
-                    offeredSkill: mockMatches[0].offeredSkill,
-                    wantedSkill: mockMatches[0].wantedSkill
-                  }} 
+                  match={match as any}
                   currentUserId={authUser?.id || ''}
                 />
               )
