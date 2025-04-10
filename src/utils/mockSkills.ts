@@ -57,6 +57,62 @@ export const mockSkills: Skill[] = [
     category: 'Cooking',
     description: 'Classic French cooking techniques',
     level: 'Expert'
+  },
+  {
+    id: '9',
+    name: 'Photography',
+    category: 'Arts & Crafts',
+    description: 'Portrait and landscape photography techniques',
+    level: 'Intermediate'
+  },
+  {
+    id: '10',
+    name: 'Machine Learning',
+    category: 'Technology',
+    description: 'Building AI models and data analysis',
+    level: 'Expert'
+  },
+  {
+    id: '11',
+    name: 'Japanese Language',
+    category: 'Language',
+    description: 'Basic conversation and writing in Japanese',
+    level: 'Beginner'
+  },
+  {
+    id: '12',
+    name: 'Guitar Lessons',
+    category: 'Music',
+    description: 'Acoustic and electric guitar techniques',
+    level: 'Intermediate'
+  },
+  {
+    id: '13',
+    name: 'Content Writing',
+    category: 'Business',
+    description: 'Creating compelling blog posts and articles',
+    level: 'Advanced'
+  },
+  {
+    id: '14',
+    name: 'Mobile App Development',
+    category: 'Technology',
+    description: 'Building iOS and Android applications',
+    level: 'Advanced'
+  },
+  {
+    id: '15',
+    name: 'Financial Planning',
+    category: 'Business',
+    description: 'Personal finance and investment strategies',
+    level: 'Intermediate'
+  },
+  {
+    id: '16',
+    name: 'Pottery',
+    category: 'Arts & Crafts',
+    description: 'Hand-building and wheel-throwing techniques',
+    level: 'Beginner'
   }
 ];
 

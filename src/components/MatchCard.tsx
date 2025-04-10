@@ -4,8 +4,8 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RepeatIcon } from "lucide-react";
-import { getSkillCategoryColor, getMatchStatusColor } from "@/utils/mockData";
-import { Match, MatchStatus } from "@/types";
+import { getSkillCategoryColor } from "@/utils/mockData";
+import { MatchStatus } from "@/types";
 
 interface MatchCardProps {
   match: {
@@ -37,6 +37,22 @@ const MatchCard = ({ match, currentUserId }: MatchCardProps) => {
     .map((n: string) => n[0])
     .join('')
     .toUpperCase();
+  
+  // Helper function to get status color
+  const getMatchStatusColor = (status: MatchStatus): string => {
+    switch (status) {
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Accepted':
+        return 'bg-green-100 text-green-800';
+      case 'Completed':
+        return 'bg-blue-100 text-blue-800';
+      case 'Declined':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
   
   return (
     <Card className="overflow-hidden">

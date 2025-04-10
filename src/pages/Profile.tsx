@@ -2,80 +2,33 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skill, User } from "@/types";
+import { User } from "@/types";
 import UserProfile from "@/components/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCurrentUser } from "@/utils/mockData";
-import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const { user: authUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
   const fetchUserProfile = async () => {
     if (!authUser) return;
     
     try {
-      // Fix TypeScript error by using proper type casting
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
-      
-      if (profileError) throw profileError;
-      
-      // Get offered skills
-      const { data: offeredSkills, error: offeredError } = await supabase
-        .from('skills')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .eq('is_offered', true);
-      
-      if (offeredError) throw offeredError;
-      
-      // Get wanted skills
-      const { data: wantedSkills, error: wantedError } = await supabase
-        .from('skills')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .eq('is_offered', false);
-      
-      if (wantedError) throw wantedError;
-      
-      // Make sure data is properly null checked
-      if (profileData) {
-        const userData: User = {
-          id: profileData.id,
-          name: profileData.name || "New User",
-          avatar: profileData.avatar || "/placeholder.svg",
-          bio: profileData.bio || "",
-          location: profileData.location || "",
-          rating: profileData.rating || 0,
-          skillsOffered: offeredSkills?.map((skill: any) => ({
-            id: skill.id,
-            name: skill.name,
-            category: skill.category as any,
-            description: skill.description,
-            level: skill.level as any,
-          })) || [],
-          skillsWanted: wantedSkills?.map((skill: any) => ({
-            id: skill.id,
-            name: skill.name,
-            category: skill.category as any,
-            description: skill.description,
-            level: skill.level as any,
-          })) || [],
-          memberSince: profileData.member_since || new Date().toISOString(),
-          isPremium: profileData.is_premium || false,
-        };
-        
-        setUser(userData);
-      }
+      // Currently using mock data due to database configuration
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
     } catch (error) {
       console.error("Error fetching profile:", error);
+      toast({
+        title: "Error loading profile",
+        description: "Please try again later",
+        variant: "destructive"
+      });
       // Fallback to mock data if there's an error
       setUser(getCurrentUser());
     } finally {

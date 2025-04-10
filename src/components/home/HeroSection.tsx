@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeroSectionProps {
   searchQuery: string;
@@ -10,6 +12,21 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ searchQuery, setSearchQuery }: HeroSectionProps) => {
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <section className="relative overflow-hidden py-24 px-4">
       <div className="absolute inset-0 hero-gradient"></div>
@@ -30,9 +47,13 @@ const HeroSection = ({ searchQuery, setSearchQuery }: HeroSectionProps) => {
             className="pl-12 py-6 bg-transparent border-0 text-base rounded-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <Search className="absolute left-4 top-4 text-gray-400" />
-          <Button className="absolute right-1 top-1 bg-skillswap-orange hover:bg-skillswap-orange/90 rounded-full button-glow">
+          <Button 
+            className={`${isMobile ? 'w-full mt-2' : 'absolute right-1 top-1'} bg-skillswap-orange hover:bg-skillswap-orange/90 rounded-full button-glow`}
+            onClick={handleSearch}
+          >
             Search
           </Button>
         </div>

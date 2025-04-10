@@ -8,10 +8,14 @@ import HowItWorks from "@/components/home/HowItWorks";
 import SuggestedMatches from "@/components/home/SuggestedMatches";
 import Testimonials from "@/components/home/Testimonials";
 import CtaSection from "@/components/home/CtaSection";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const featuredSkills = mockSkills.slice(0, 4);
+  const navigate = useNavigate();
+  
+  // Get 8 featured skills instead of 4
+  const featuredSkills = mockSkills.slice(0, 8);
   const suggestedMatches = mockUsers.slice(1, 4);
   
   return (
