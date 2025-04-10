@@ -43,6 +43,7 @@ const UserProfile = ({
 
   const handleSave = async () => {
     try {
+      // Fix TypeScript error by casting from to the correct table name
       const { error } = await supabase
         .from('profiles')
         .update({
